@@ -1,6 +1,6 @@
 #include <map>
 #include <iostream>
-#include <utility/ClassFactory.hpp>
+#include "../Smw/utility/ClassFactory.hpp"
 
 // 全局 unordered_map，用于存储类工厂对象
 std::unordered_map<std::string, AbstractClassFactoryBase*> classFactories;
@@ -15,7 +15,7 @@ template <typename Base>
 Base* CreateObject(const std::string& className) {
     auto it = classFactories.find(className);
     if (it != classFactories.end()) {
-        AbstractClassFactory<Base>* factory = static_cast<AbstractClassFactory<Base>*>(it->second);
+        AbstractClassFactory<Base>* factory = dynamic_cast<AbstractClassFactory<Base>*>(it->second);
         if (factory) {
             return factory->CreateObj();
         }
