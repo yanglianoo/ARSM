@@ -8,10 +8,14 @@ CC = g++
 #编译选项
 CFLAGS:= -std=c++11 #c++11
 
-.PHONY:test_factory
-test_factory:test_factory.cpp ../$(SMW)/$(UTILITY)/ClassFactory.cpp
-	$(CC) $(INCLUDE) $^ $(CFLAGS) -o $@
+# .PHONY:test_factory
+# test_factory:test_factory.cpp ../$(SMW)/$(UTILITY)/ClassFactory.cpp
+# 	$(CC) $(INCLUDE) $^ $(CFLAGS) -o $@
 
 .PHONY:test_lpmsig1
-test_lpmsig1:test_lpmsig1.cpp 
-	$(CC) $(INCLUDE) $^ $(CFLAGS)  -o $@ -L../Smw -lsmw
+test_lpmsig1:test_lpmsig1.cpp LpmsIG1.CPP
+	$(CC) $(INCLUDE) $^ $(CFLAGS)  -o $@.out -L../Smw/lib/ -lsmw  -lpthread -lLpmsIG1_OpenSourceLib 
+
+.PHONY:clean
+clean:
+	rm -rf *.out

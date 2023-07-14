@@ -21,6 +21,7 @@ template <typename Base>
 Base* CreateObject(const std::string& className) {
     auto it = classFactories.find(className);
     if (it != classFactories.end()) {
+        std::cout<<"CreateObj success" <<std::endl;
         AbstractClassFactory<Base>* factory = static_cast<AbstractClassFactory<Base>*>(it->second);
         if (factory) {
             return factory->CreateObj();
@@ -29,33 +30,14 @@ Base* CreateObject(const std::string& className) {
     return nullptr;
 }
 
-class LpmsIG1 : public SensorDevice {
-public:
-    bool Init(std::string &configPath) override {
-        std::cout<<configPath<<std::endl;
-    }
 
-    int GetFrameData(DataBase *data) override
-    {
-        std::cout<<"get LpmsIG1 data"<<std::endl;
-    }
-    int OpenDevice()  override
-    {
-        std::cout<<"OpenDevice:LpmsIG1"<<std::endl;
-    }
-
-    int CloseDevice() override
-    {
-        std::cout<<"CloseDevice:LpmsIG1"<<std::endl;
-    }
-
-};
-CLASS_LOADER_REGISTER_CLASS(LpmsIG1,SensorDevice)
 
 std::string configPath;
-int SmwInit(char *pathFile)
+int SmwInit(std::string pathFile)
 {
     configPath = pathFile;
+    std::cout<<"SmwInit:" <<configPath<<std::endl;
+
 
 }
 DevHandle GetDevice(char *name)
@@ -70,7 +52,7 @@ int OpenDevice(DevHandle dev)
     devicePtr->Init(configPath);
 }
 
-int GetFrameData(DevHandle dev, DataBase* &data)
+int GetFrameData(DevHandle dev, std::vector<DataBase *> &data)
 {
     SensorDevice* devicePtr = static_cast<SensorDevice*>(dev);
     devicePtr->GetFrameData(data);
