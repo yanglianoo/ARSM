@@ -19,36 +19,37 @@ bool LpmsIG1::Init(std::string &configPath)
     std::cout<<"serial_port:"<<serial_port<< "  baudRate: " << baudRate << std::endl;
     sensor1 = IG1Factory();
     sensor1->setVerbose(VERBOSE_INFO);
-    sensor1->setAutoReconnectStatus(true);
+    sensor1->setAutoReconnectStatus(false);
     if (!sensor1->connect(serial_port, baudRate))
     {
         sensor1->release();
         std::cout<< "Error connecting to sensor"<<std::endl;
     }
-    do
-    {
-        std::cout<<"Waiting for sensor to connect"<<std::endl;
-        this_thread::sleep_for(chrono::milliseconds(1000));
-    } while (
-        !(sensor1->getStatus() == STATUS_CONNECTED) && 
-        !(sensor1->getStatus() == STATUS_CONNECTION_ERROR)
-    );
-    if (sensor1->getStatus() != STATUS_CONNECTED)
-    {
-        std::cout<<"Sensor connection error status: "<< sensor1->getStatus()<<std::endl;
-        sensor1->release();
-        std::cout<<"bye"<<std::endl;
-    }
-    std::cout<<"Sensor connected"<<std::endl;
-        if (sensor1->getStatus() != STATUS_CONNECTED)
-    {
-        printThreadIsRunning = false;
-        std::cout<<"Sensor is not connected. Sensor Status: "<<sensor1->getStatus()<<std::endl;
-        std::cout<<"printTask terminated"<<std::endl;
-        return false;
-    }
-    printThreadIsRunning = true;
-    return true;
+    // do
+    // {
+    //     std::cout<<"Waiting for sensor to connect"<<std::endl;
+    //     this_thread::sleep_for(chrono::milliseconds(1000));
+    // } while (
+    //     !(sensor1->getStatus() == STATUS_CONNECTED) && 
+    //     !(sensor1->getStatus() == STATUS_CONNECTION_ERROR)
+    // );
+    // if (sensor1->getStatus() != STATUS_CONNECTED)
+    // {
+    //     std::cout<<"Sensor connection error status: "<< sensor1->getStatus()<<std::endl;
+    //     sensor1->release();
+    //     std::cout<<"bye"<<std::endl;
+    // }
+    // std::cout<<"Sensor connected"<<std::endl;
+    // if (sensor1->getStatus() != STATUS_CONNECTED)
+    // {
+    //     printThreadIsRunning = false;
+    //     std::cout<<"Sensor is not connected. Sensor Status: "<<sensor1->getStatus()<<std::endl;
+    //     std::cout<<"printTask terminated"<<std::endl;
+    //     return false;
+    // }
+    // printThreadIsRunning = false;
+    // std::cout<<"!!!!!!!!!!!!!!!!!!!!!!!"<<std::endl;
+    // return true;
 }
 
 int LpmsIG1::GetFrameData(std::vector<DataBase*> &data)
@@ -82,4 +83,5 @@ int LpmsIG1::OpenDevice()
 int LpmsIG1::CloseDevice()
 {
     std::cout<<"LpmsIG1 CloseDevice"<<std::endl;
+    sensor1->release();
 }
