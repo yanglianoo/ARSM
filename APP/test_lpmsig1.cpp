@@ -23,21 +23,17 @@ int main()
     OpenDevice(dev);
     std::vector<DataBase*> data;
 
-    int ret = 1;
+    
     while(1)
     {
 
-        ret =  Auto_Monitor(dev);
+        int ret =  Auto_Monitor(dev);
         if(ret == 1)
         {
 
             GetFrameData(dev,data);
             
             PrintComposeframe(data[0]);
-        }
-        else
-        {
-            //std::cout<<"debug"<<std::endl;
         }
     }
     return 0;

@@ -1,3 +1,11 @@
+/**
+ * @File Name: SmwApi.cpp
+ * @brief  
+ * @Author : Timer email:330070781@qq.com
+ * @Version : 1.0
+ * @Creat Date : 2023-07-15
+ * 
+ */
 #include "SmwApi.h"
 #include <unordered_map>
 #include <iostream>

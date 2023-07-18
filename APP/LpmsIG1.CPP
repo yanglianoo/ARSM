@@ -25,31 +25,30 @@ bool LpmsIG1::Init(std::string &configPath)
         sensor1->release();
         std::cout<< "Error connecting to sensor"<<std::endl;
     }
-    // do
-    // {
-    //     std::cout<<"Waiting for sensor to connect"<<std::endl;
-    //     this_thread::sleep_for(chrono::milliseconds(1000));
-    // } while (
-    //     !(sensor1->getStatus() == STATUS_CONNECTED) && 
-    //     !(sensor1->getStatus() == STATUS_CONNECTION_ERROR)
-    // );
-    // if (sensor1->getStatus() != STATUS_CONNECTED)
-    // {
-    //     std::cout<<"Sensor connection error status: "<< sensor1->getStatus()<<std::endl;
-    //     sensor1->release();
-    //     std::cout<<"bye"<<std::endl;
-    // }
-    // std::cout<<"Sensor connected"<<std::endl;
-    // if (sensor1->getStatus() != STATUS_CONNECTED)
-    // {
-    //     printThreadIsRunning = false;
-    //     std::cout<<"Sensor is not connected. Sensor Status: "<<sensor1->getStatus()<<std::endl;
-    //     std::cout<<"printTask terminated"<<std::endl;
-    //     return false;
-    // }
-    // printThreadIsRunning = false;
-    // std::cout<<"!!!!!!!!!!!!!!!!!!!!!!!"<<std::endl;
-    // return true;
+    do
+    {
+        std::cout<<"Waiting for sensor to connect"<<std::endl;
+        this_thread::sleep_for(chrono::milliseconds(1000));
+    } while (
+        !(sensor1->getStatus() == STATUS_CONNECTED) && 
+        !(sensor1->getStatus() == STATUS_CONNECTION_ERROR)
+    );
+    if (sensor1->getStatus() != STATUS_CONNECTED)
+    {
+        std::cout<<"Sensor connection error status: "<< sensor1->getStatus()<<std::endl;
+        sensor1->release();
+        std::cout<<"bye"<<std::endl;
+    }
+    if (sensor1->getStatus() != STATUS_CONNECTED)
+    {
+        printThreadIsRunning = false;
+        std::cout<<"Sensor is not connected. Sensor Status: "<<sensor1->getStatus()<<std::endl;
+        std::cout<<"printTask terminated"<<std::endl;
+        return false;
+    }
+    printThreadIsRunning = false;
+    std::cout<<"Sensor connected"<<std::endl;
+    return true;
 }
 
 int LpmsIG1::GetFrameData(std::vector<DataBase*> &data)
@@ -67,7 +66,6 @@ int LpmsIG1::GetFrameData(std::vector<DataBase*> &data)
         LpmsIG1_data->gyroscope_x = sd.gyroIAlignmentCalibrated.data[0];
         LpmsIG1_data->gyroscope_y = sd.gyroIAlignmentCalibrated.data[1];
         LpmsIG1_data->gyroscope_z = sd.gyroIAlignmentCalibrated.data[2];
-        std::cout<<"frequency:" <<sensor1->getDataFrequency() <<std::endl;
     }
     
 }
