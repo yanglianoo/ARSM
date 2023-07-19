@@ -40,7 +40,10 @@ bool LpmsIG1::Init(std::string &configPath)
 
 int LpmsIG1::GetFrameData(std::vector<DataBase*> &data)
 {
-    data.push_back(new ImuData());
+    if(data.size() <= 1 )
+    {
+        data.push_back(new ImuData());
+    }
     ImuData* LpmsIG1_data = dynamic_cast<ImuData*>(data[0]);
     if (sensor1->hasImuData())
     {
