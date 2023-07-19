@@ -1,7 +1,7 @@
 #pragma once 
 
-#include "../Smw/SensorDevice.h"
-#include "../Smw/utility/ClassFactory.hpp"
+#include "../../Smw/SensorDevice.h"
+#include "../../Smw/utility/ClassFactory.hpp"
 #include "lpmsig1opensourcelib/LpmsIG1.h"
 class LpmsIG1:public SensorDevice
 {

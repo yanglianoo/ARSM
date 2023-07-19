@@ -1,6 +1,6 @@
 #include "LpmsIG1.h"
-#include "../Smw/utility/ini_file.hpp"
-#include "../Smw/utility/singleton.hpp"
+#include "../../Smw/utility/ini_file.hpp"
+#include "../../Smw/utility/singleton.hpp"
 #include <iostream>
 #include <thread>
 using namespace SMW;
@@ -20,34 +20,21 @@ bool LpmsIG1::Init(std::string &configPath)
     sensor1 = IG1Factory();
     sensor1->setVerbose(VERBOSE_INFO);
     sensor1->setAutoReconnectStatus(false);
-    if (!sensor1->connect(serial_port, baudRate))
+
+    // 连接最大次数 20 次
+    for(size_t i=0; i<=20; i++)
     {
-        sensor1->release();
-        std::cout<< "Error connecting to sensor"<<std::endl;
+        if (!sensor1->connect(serial_port, baudRate))
+        {
+            sensor1->release();
+            std::cout<< "Error connecting to sensor"<<std::endl;
+        }
+        else
+        {
+            std::cout<<"Sensor connected"<<std::endl;
+            break;
+        }
     }
-    do
-    {
-        std::cout<<"Waiting for sensor to connect"<<std::endl;
-        this_thread::sleep_for(chrono::milliseconds(1000));
-    } while (
-        !(sensor1->getStatus() == STATUS_CONNECTED) && 
-        !(sensor1->getStatus() == STATUS_CONNECTION_ERROR)
-    );
-    if (sensor1->getStatus() != STATUS_CONNECTED)
-    {
-        std::cout<<"Sensor connection error status: "<< sensor1->getStatus()<<std::endl;
-        sensor1->release();
-        std::cout<<"bye"<<std::endl;
-    }
-    if (sensor1->getStatus() != STATUS_CONNECTED)
-    {
-        printThreadIsRunning = false;
-        std::cout<<"Sensor is not connected. Sensor Status: "<<sensor1->getStatus()<<std::endl;
-        std::cout<<"printTask terminated"<<std::endl;
-        return false;
-    }
-    printThreadIsRunning = false;
-    std::cout<<"Sensor connected"<<std::endl;
     return true;
 }
 

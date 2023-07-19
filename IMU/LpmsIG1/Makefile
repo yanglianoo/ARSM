@@ -1,6 +1,6 @@
 
-INCLUDE+= -I../Smw/utility
-INCLUDE+= -I../Smw
+# INCLUDE+= -I../Smw/utility
+# INCLUDE+= -I../Smw
 SMW:= Smw
 UTILITY:=utility
 #指定编译器
@@ -14,7 +14,7 @@ CFLAGS:= -std=c++11 #c++11
 
 .PHONY:test_lpmsig1
 test_lpmsig1:test_lpmsig1.cpp LpmsIG1.CPP
-	$(CC) $(INCLUDE) $^ $(CFLAGS)  -o $@.out -L../Smw/lib/ -lsmw  -lpthread -lLpmsIG1_OpenSourceLib 
+	$(CC)  $^ $(CFLAGS)  -o $@.out -L../../Smw/lib/ -lsmw  -lpthread -lLpmsIG1_OpenSourceLib 
 
 .PHONY:clean
 clean:

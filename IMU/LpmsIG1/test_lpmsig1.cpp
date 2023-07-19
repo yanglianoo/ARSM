@@ -1,4 +1,4 @@
-#include "../Smw/SmwApi.h"
+#include "../../Smw/SmwApi.h"
 #include <iostream>
 #include <string>
 #include <unistd.h>
@@ -20,20 +20,19 @@ int main()
     std::string path = "../sensor_config.ini";
     SmwInit(path);
     auto dev = GetDevice("LpmsIG1");
-    OpenDevice(dev);
     std::vector<DataBase*> data;
-
-    
     while(1)
     {
-
         int ret =  Auto_Monitor(dev);
+
         if(ret == 1)
         {
-
             GetFrameData(dev,data);
-            
             PrintComposeframe(data[0]);
+        }
+        else if(ret == 2 )
+        {
+            
         }
     }
     return 0;

@@ -6,4 +6,4 @@ CC = g++
 CFLAGS:= -std=c++11 #c++11
 .PHONY:libsmw.so
 libsmw.so: *.cpp $(UTILITY)/*.cpp
-	$(CC)  $^  -fPIC -shared -o lib/$@ $(CFLAGS)
+	$(CC)  $^  -fPIC -shared -o lib/$@ $(CFLAGS) -ludev

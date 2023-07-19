@@ -30,7 +30,6 @@ template <typename Base>
 Base* CreateObject(const std::string& className) {
     auto it = classFactories.find(className);
     if (it != classFactories.end()) {
-        std::cout<<"CreateObj success" <<std::endl;
         AbstractClassFactory<Base>* factory = static_cast<AbstractClassFactory<Base>*>(it->second);
         if (factory) {
             return factory->CreateObj();
@@ -80,7 +79,7 @@ int SmwInit(std::string pathFile)
 
 }
 
-static int flag = 1;
+static int flag = 2;
 
 int Auto_Monitor(DevHandle dev)
 {
@@ -97,8 +96,7 @@ int Auto_Monitor(DevHandle dev)
                     if(Action == "add")
                     {
                         std::cout<<"Sensor insertion!"<<std::endl;
-                        OpenDevice(dev);
-                        
+                        OpenDevice(dev);   
                         flag = 1;
                     }
                     else if(Action == "remove")
@@ -111,6 +109,7 @@ int Auto_Monitor(DevHandle dev)
             udev_device_unref(device);
             }
        }
+
     return flag;
 }
 
@@ -124,6 +123,7 @@ int OpenDevice(DevHandle dev)
 {
     SensorDevice* devicePtr = static_cast<SensorDevice*>(dev);
     devicePtr->Init(configPath);
+    devicePtr->OpenDevice();
 }
 
 int GetFrameData(DevHandle dev, std::vector<DataBase *> &data)

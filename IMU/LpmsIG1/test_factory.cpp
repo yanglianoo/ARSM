@@ -1,6 +1,6 @@
 #include <map>
 #include <iostream>
-#include "../Smw/utility/ClassFactory.hpp"
+#include "../../Smw/utility/ClassFactory.hpp"
 
 // 全局 unordered_map，用于存储类工厂对象
 std::unordered_map<std::string, AbstractClassFactoryBase*> classFactories;
