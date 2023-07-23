@@ -1,5 +1,5 @@
 #pragma once 
-
+#include <chrono>
 #include "../Smw/SensorDevice.h"
 #include "../Smw/utility/ClassFactory.hpp"
 #include "rplidar_sdk-master/sl_lidar.h"
@@ -22,13 +22,20 @@ class SL_lidar_S1:public SensorDevice
         {
             delete[] drv;
         }
+        
     private:
+        bool inverted = false;
+        double angle_compensate_multiple = 1.0;
         sl_result op_result;
         ILidarDriver * drv ;
         IChannel* _channel;
         int opt_channel_type = sl::CHANNEL_TYPE_SERIALPORT ;
         sl_lidar_response_measurement_node_hq_t nodes[8192];
         size_t count = _countof(nodes);
+        static float getAngle(const sl_lidar_response_measurement_node_hq_t& node)
+        {
+             return node.angle_z_q14 * 90.f / 16384.f;
+        }
 };
 CLASS_LOADER_REGISTER_CLASS(SL_lidar_S1,SensorDevice)
 

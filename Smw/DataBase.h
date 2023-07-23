@@ -7,8 +7,9 @@
  * 
  */
 #pragma once
-
+#include <cfloat>
 #include <string>
+#include <vector>
 
 typedef struct _DataBase {
     virtual ~_DataBase() = default;
@@ -33,4 +34,18 @@ struct ImuData :public DataBase {
     float Pressure;              // 气压值
     float pressure_temperature;  // 气压计的温度值
     int64_t Timestamp;           // 数据的时间戳
+};
+
+struct LidarScan :public DataBase
+{
+    std::string frame_id;
+    _Float32 angle_min;
+    _Float32 angle_max;
+    _Float32 angle_increment;
+    _Float32 time_increment;
+    _Float32 scan_time;
+    _Float32 range_min;
+    _Float32 range_max;
+    std::vector<_Float32> ranges;
+    std::vector<_Float32> intensities; 
 };
