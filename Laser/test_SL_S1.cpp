@@ -24,14 +24,27 @@ int main()
     std::string path = "../sensor_config.ini";
     SmwInit(path);
     auto dev = GetDevice("SL_lidar_S1");
-    OpenDevice(dev);
+    //OpenDevice(dev);
     std::vector<DataBase*> data;   
-    while (1)
+    // while (1)
+    // {
+    //     GetFrameData(dev,data);  
+    //     //PrintComposeframe(data[0]);   
+    // }
+    while(1)
     {
-        GetFrameData(dev,data);  
-        PrintComposeframe(data[0]);   
+        int ret =  Auto_Monitor(dev);
+
+        if(ret == 1)
+        {
+            GetFrameData(dev,data);
+           // PrintComposeframe(data[0]);
+        }
+        else if(ret == 2 )
+        {
+            
+        }
     }
-    
     
     return 0;
 }

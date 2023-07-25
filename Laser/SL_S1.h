@@ -1,5 +1,5 @@
 #pragma once 
-#include <chrono>
+#include <ctime>
 #include "../Smw/SensorDevice.h"
 #include "../Smw/utility/ClassFactory.hpp"
 #include "rplidar_sdk-master/sl_lidar.h"
@@ -30,8 +30,8 @@ class SL_lidar_S1:public SensorDevice
         ILidarDriver * drv ;
         IChannel* _channel;
         int opt_channel_type = sl::CHANNEL_TYPE_SERIALPORT ;
-        sl_lidar_response_measurement_node_hq_t nodes[8192];
-        size_t count = _countof(nodes);
+
+        
         static float getAngle(const sl_lidar_response_measurement_node_hq_t& node)
         {
              return node.angle_z_q14 * 90.f / 16384.f;
