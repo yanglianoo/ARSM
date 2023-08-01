@@ -4,14 +4,18 @@
 #include <unistd.h>
 void PrintComposeframe(DataBase *data)
 {
-    ImuData *frameData = static_cast<ImuData *>(data);
-    std::cout << "frequency: " << frameData->frequency << " ";
-    std::cout << "gyroscope_x: " << frameData->gyroscope_x <<" ";
-    std::cout << "gyroscope_y: " << frameData->gyroscope_y <<" ";
-    std::cout << "gyroscope_z: " << frameData->gyroscope_z <<" ";
-    std::cout << "accelerometer_x: " <<frameData->accelerometer_x << " ";
-    std::cout << "accelerometer_y: " <<frameData->accelerometer_y << " ";
-    std::cout << "accelerometer_z: " <<frameData->accelerometer_z << " ";
+    LidarScan *frameData = static_cast<LidarScan *>(data);
+    std::cout << "frame_id: " << frameData->frame_id << " ";
+    std::cout << "angle_min: " << frameData->angle_min <<" ";
+    std::cout << "angle_max: " << frameData->angle_max <<" ";
+    std::cout << "range_min: " << frameData->range_min <<" ";
+    std::cout << "range_max: " <<frameData->range_max << " ";
+    for(int i = 1;i<frameData->ranges.size();i++){
+        std::cout << "ranges: " <<frameData->ranges[i] << " ";
+    }
+    for(int j = 1;j<frameData->intensities.size();j++){
+    std::cout << "intensities: " <<frameData->intensities[j] << " ";
+    }
     std::cout << std::endl;
     return;
 }
@@ -24,7 +28,8 @@ int main()
     std::vector<DataBase*> data;   
     while (1)
     {
-        GetFrameData(dev,data);     
+        GetFrameData(dev,data);  
+        PrintComposeframe(data[0]);   
     }
     
     

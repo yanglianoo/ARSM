@@ -45,6 +45,7 @@ struct udev_monitor * device_mon;
 
 void Udev_Get(bool flag , std::string type)
 {
+    
     udev *udev = udev_new();
     if (!udev) {
         std::cout<<"Failed to create udev.\n"<<std::endl;
