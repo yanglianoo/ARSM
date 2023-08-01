@@ -10,6 +10,7 @@
 #include <cfloat>
 #include <string>
 #include <vector>
+#include <opencv2/opencv.hpp>
 
 typedef struct _DataBase {
     virtual ~_DataBase() = default;
@@ -61,5 +62,6 @@ struct ImageData :public DataBase {
     uint32_t width=640; // 宽
     uint32_t height=480; // 高
     uint32_t size=640*480; // 大小
-    void* ptr; // 存放图像的内存地址
+    // void* ptr; // 存放图像的内存地址
+    cv::Mat data; // 存放图像
 };

@@ -54,7 +54,7 @@ int RealSenseD435i::GetFrameData(std::vector<DataBase*> &data)
     ImageData* RgbData = dynamic_cast<ImageData*>(data[0]);
     rs2::frame rgb_frame = frames.get_color_frame();
     RgbData->type = rgb;
-    RgbData->ptr = (void*)rgb_frame.get_data();
+    RgbData->data = cv::Mat(cv::Size(640, 480), CV_8UC3, (void*)color_frame.get_data(), cv::Mat::AUTO_STEP);
 
 
     // 保存深度数据
@@ -65,7 +65,7 @@ int RealSenseD435i::GetFrameData(std::vector<DataBase*> &data)
         ImageData* DepthData = dynamic_cast<ImageData*>(data[1]);
         rs2::frame depth_frame = frames.get_depth_frame();
         DepthData->type = depth;
-        DepthData->ptr = (void*)depth_frame.get_data();
+        DepthData-> data = cv::Mat(cv::Size(640, 480), CV_16UC1, (void*)depth_frame.get_data(), cv::Mat::AUTO_STEP);
     }
 
     

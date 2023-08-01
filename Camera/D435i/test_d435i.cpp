@@ -37,16 +37,16 @@ int main()
         GetFrameData(dev,data);
         show(data[0]);
         show(data[1]);
-        ImageData *RgbData = static_cast<ImageData *>(data[0]);
-        ImageData *DepthData = static_cast<ImageData *>(data[1]);
-        cv::Mat colorMat = cv::Mat(cv::Size(640, 480), CV_8UC3, RgbData->ptr, cv::Mat::AUTO_STEP);
-        cv::Mat depthMat = cv::Mat(cv::Size(640, 480), CV_16UC1, DepthData->ptr, cv::Mat::AUTO_STEP);
+        // ImageData *RgbData = static_cast<ImageData *>(data[0]);
+        // ImageData *DepthData = static_cast<ImageData *>(data[1]);
+        // cv::Mat colorMat = cv::Mat(cv::Size(640, 480), CV_8UC3, RgbData->ptr, cv::Mat::AUTO_STEP);
+        // cv::Mat depthMat = cv::Mat(cv::Size(640, 480), CV_16UC1, DepthData->ptr, cv::Mat::AUTO_STEP);
 
-        cv::namedWindow("RGB", cv::WINDOW_NORMAL);
-        cv::namedWindow("Depth", cv::WINDOW_NORMAL);
-        cv::imshow("RGB", colorMat);
-        cv::imshow("Depth", depthMat);
-        cv::waitKey(0);
+        // cv::namedWindow("RGB", cv::WINDOW_NORMAL);
+        // cv::namedWindow("Depth", cv::WINDOW_NORMAL);
+        // cv::imshow("RGB", colorMat);
+        // cv::imshow("Depth", depthMat);
+        // cv::waitKey(0);
         // }
     }
     return 0;
