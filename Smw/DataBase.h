@@ -34,3 +34,17 @@ struct ImuData :public DataBase {
     float pressure_temperature;  // 气压计的温度值
     int64_t Timestamp;           // 数据的时间戳
 };
+
+enum ImageType {
+    rgb=0,
+    depth
+};
+
+struct ImageData :public DataBase {
+    uint32_t channel_id; // 通道ID
+    ImageType type; //图片类型
+    uint32_t width=640; // 宽
+    uint32_t height=480; // 高
+    uint32_t size=640*480; // 大小
+    void* ptr; // 存放图像的内存地址
+};
