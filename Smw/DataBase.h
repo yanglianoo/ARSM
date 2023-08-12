@@ -10,6 +10,7 @@
 #include <cfloat>
 #include <string>
 #include <vector>
+#include <opencv2/opencv.hpp>
 
 typedef struct _DataBase {
     virtual ~_DataBase() = default;
@@ -48,4 +49,19 @@ struct LidarScan :public DataBase
     _Float32 range_max;
     std::vector<_Float32> ranges;
     std::vector<_Float32> intensities; 
+};
+
+enum ImageType {
+    rgb=0,
+    depth
+};
+
+struct ImageData :public DataBase {
+    uint32_t channel_id; // 通道ID
+    ImageType type; //图片类型
+    uint32_t width=640; // 宽
+    uint32_t height=480; // 高
+    uint32_t size=640*480; // 大小
+    // void* ptr; // 存放图像的内存地址
+    cv::Mat data; // 存放图像
 };
