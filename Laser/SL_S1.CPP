@@ -77,20 +77,22 @@ int SL_lidar_S1::GetFrameData(std::vector<DataBase*> &data)
     {
         data.push_back(new LidarScan());
     }
-    // std::cout<<"debug"<<std::endl;
+    std::cout<<"debug"<<std::endl;
     LidarScan* RPLidar_S1 = static_cast<LidarScan*>(data[0]);
         auto start_time = std::time(nullptr);
 
         sl_lidar_response_measurement_node_hq_t nodes[8192];
         size_t count = _countof(nodes);
-        // std::cout<<"count"<<count<<std::endl;
+        
         op_result = drv->grabScanDataHq(nodes,count);
+        std::cout<<"count"<<count<<std::endl;
         auto end_time = std::time(nullptr);
-        // std::cout<<"debug"<<std::endl;
+        std::cout<<"debug"<<std::endl;
         auto scan_duration = end_time - start_time;
         
     if (op_result == SL_RESULT_OK )
      {
+        std::cout<<"de"<<std::endl;
         op_result = drv->ascendScanData(nodes,count);
         float angle_min = DEG2RAD(0.0f);
         float angle_max = DEG2RAD(360.0f);
@@ -126,7 +128,7 @@ int SL_lidar_S1::GetFrameData(std::vector<DataBase*> &data)
                 
                 RPLidar_S1->intensities.resize(end_node-start_node+1);
                 RPLidar_S1->ranges.resize(end_node-start_node+1);
-                // std::cout<<"data count:" <<end_node-start_node+1<<std::endl;
+                std::cout<<"data count:" <<end_node-start_node+1<<std::endl;
                 bool reverse_data = (!inverted && reversed) || (inverted && !reversed);
             if (!reverse_data) {
         for (size_t i = 0; i < (end_node-start_node+1); i++) {

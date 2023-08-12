@@ -17,7 +17,7 @@ void PrintComposeframe(DataBase *data)
 }
 int main()
 {
-    std::string path = "../sensor_config.ini";
+    std::string path = "../../sensor_config.ini";
     SmwInit(path);
     auto dev = GetDevice("LpmsIG1");
     std::vector<DataBase*> data;
