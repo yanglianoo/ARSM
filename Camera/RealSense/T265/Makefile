@@ -3,7 +3,7 @@ INCLUDE+= -I/usr/local/include/opencv4
 CC = g++
 #编译选项
 CFLAGS:= -std=c++11 #c++11
-SMWLIBPATH:=../../../Smw/lib/   #按照实际系统指定lib路径
+SMWLIBPATH:=../../../Smw/lib/
 OPENCVLIBPATH=/usr/local/lib64/
 .PHONY:test_t265
 test_t265: T265.cpp test_t265.cpp

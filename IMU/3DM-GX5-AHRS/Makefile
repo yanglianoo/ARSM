@@ -9,7 +9,7 @@ CC = g++
 #编译选项
 CFLAGS:= -std=c++11 #c++11
 
-SmwLibPath:=../../Smw/lib/     #按照实际系统指定lib路径
+SmwLibPath:=../../Smw/lib/
 BoostLibPath:=./c++-mscl/Boost/lib
 LIB:=-lmscl
 LIB+=-lboost_system

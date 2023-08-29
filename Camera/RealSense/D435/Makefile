@@ -3,7 +3,7 @@
 INCLUDE+= -I/usr/local/include/opencv4
 SMW:= Smw
 UTILITY:=utility
-SMWLIBPATH:=../../../Smw/lib/   #按照实际系统指定lib路径
+SMWLIBPATH:=../../../Smw/lib/
 OPENCVLIBPATH=/usr/local/lib64/
 #指定编译器
 CC = g++

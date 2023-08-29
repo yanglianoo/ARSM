@@ -1,7 +1,7 @@
 #pragma once 
 #include <chrono>
-#include "../Smw/SensorDevice.h"
-#include "../Smw/utility/ClassFactory.hpp"
+#include "../../Smw/SensorDevice.h"
+#include "../../Smw/utility/ClassFactory.hpp"
 #include "rplidar_sdk-master/sl_lidar.h"
 #include "rplidar_sdk-master/sl_lidar_driver.h"
 #include <iostream>

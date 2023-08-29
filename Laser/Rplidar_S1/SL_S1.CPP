@@ -1,6 +1,6 @@
 #include "SL_S1.h"
-#include "../Smw/utility/ini_file.hpp"
-#include "../Smw/utility/singleton.hpp"
+#include "../../Smw/utility/ini_file.hpp"
+#include "../../Smw/utility/singleton.hpp"
 #include <iostream>
 #include <thread>
 #include "math.h"
@@ -47,9 +47,10 @@ bool SL_lidar_S1::Init(std::string &configPath)
 			(fprintf(stderr, "Error, cannot bind to the specified serial port %s.\n"
 				,serial_port )):(fprintf(stderr, "Error, cannot connect to the specified ip addr %s.\n"
 				, serial_port));
-		
-        //goto on_finished;
+        return 0;
+	
     }
+    return true;
 }
 
 int SL_lidar_S1::OpenDevice()
@@ -57,19 +58,22 @@ int SL_lidar_S1::OpenDevice()
     std::cout<<"SL_Lidar OpenDevice"<<std::endl;
         if(drv->isConnected())
     {
-      std::cout<<"Start motor"<<std::endl;
-      sl_result ans=drv->setMotorSpeed();
-      if(ans == SL_RESULT_OK)
-      {
-        if(SL_IS_FAIL(drv->startScan( 0,1 )))
+        std::cout<<"Start motor"<<std::endl;
+        sl_result ans=drv->setMotorSpeed();
+        if(ans == SL_RESULT_OK)
         {
-            std::cout<<"fail" << std::endl;
+            if(SL_IS_FAIL(drv->startScan( 0,1 )))
+            {
+                std::cout<<"fail" << std::endl;
+                return false;
+            }
         }
-      }
-      else{
-        std::cout<<"Start motor fail"<<std::endl;
-      }
+      else  {
+                std::cout<<"Start motor fail"<<std::endl;
+                return false;
+            }
    }
+   return true;
 }
 int SL_lidar_S1::GetFrameData(std::vector<DataBase*> &data)
 {
@@ -77,22 +81,22 @@ int SL_lidar_S1::GetFrameData(std::vector<DataBase*> &data)
     {
         data.push_back(new LidarScan());
     }
-    std::cout<<"debug"<<std::endl;
-    LidarScan* RPLidar_S1 = static_cast<LidarScan*>(data[0]);
+    // std::cout<<"debug"<<std::endl;
+        LidarScan* RPLidar_S1 = static_cast<LidarScan*>(data[0]);
         auto start_time = std::time(nullptr);
 
         sl_lidar_response_measurement_node_hq_t nodes[8192];
         size_t count = _countof(nodes);
         
         op_result = drv->grabScanDataHq(nodes,count);
-        std::cout<<"count"<<count<<std::endl;
+        // std::cout<<"count"<<count<<std::endl;
         auto end_time = std::time(nullptr);
-        std::cout<<"debug"<<std::endl;
+        // std::cout<<"debug"<<std::endl;
         auto scan_duration = end_time - start_time;
         
     if (op_result == SL_RESULT_OK )
      {
-        std::cout<<"de"<<std::endl;
+        // std::cout<<"de"<<std::endl;
         op_result = drv->ascendScanData(nodes,count);
         float angle_min = DEG2RAD(0.0f);
         float angle_max = DEG2RAD(360.0f);
@@ -110,7 +114,7 @@ int SL_lidar_S1::GetFrameData(std::vector<DataBase*> &data)
                 angle_max = DEG2RAD(getAngle(nodes[end_node]));
                 RPLidar_S1->timestamp = start_time; 
                 RPLidar_S1->frame_id = "laser_frame";
-               bool reversed = (angle_max > angle_min);
+                bool reversed = (angle_max > angle_min);
                 if ( reversed )
                 {
                     RPLidar_S1->angle_min = M_PI - angle_max;
@@ -128,30 +132,30 @@ int SL_lidar_S1::GetFrameData(std::vector<DataBase*> &data)
                 
                 RPLidar_S1->intensities.resize(end_node-start_node+1);
                 RPLidar_S1->ranges.resize(end_node-start_node+1);
-                std::cout<<"data count:" <<end_node-start_node+1<<std::endl;
+                // std::cout<<"data count:" <<end_node-start_node+1<<std::endl;
                 bool reverse_data = (!inverted && reversed) || (inverted && !reversed);
             if (!reverse_data) {
         for (size_t i = 0; i < (end_node-start_node+1); i++) {
-            float read_value = (float) nodes[i].dist_mm_q2/4.0f/1000;
+                 float read_value = (float) nodes[i].dist_mm_q2/4.0f/1000;
             if (read_value == 0.0)
                 RPLidar_S1->ranges[i] = std::numeric_limits<float>::infinity();
             else
-                 RPLidar_S1->ranges[i] = read_value;
-             RPLidar_S1->intensities[i] = (float) (nodes[i].quality >> 2);
+                RPLidar_S1->ranges[i] = read_value;
+                RPLidar_S1->intensities[i] = (float) (nodes[i].quality >> 2);
             }
          } else {
         for (size_t i = 0; i < (end_node-start_node+1); i++) {
             float read_value = (float)nodes[i].dist_mm_q2/4.0f/1000;
             if (read_value == 0.0)
-                 RPLidar_S1->ranges[end_node-start_node+1-1-i] = std::numeric_limits<float>::infinity();
+                RPLidar_S1->ranges[end_node-start_node+1-1-i] = std::numeric_limits<float>::infinity();
             else
-                 RPLidar_S1->ranges[end_node-start_node+1-1-i] = read_value;
+                RPLidar_S1->ranges[end_node-start_node+1-1-i] = read_value;
                 RPLidar_S1->intensities[end_node-start_node+1-1-i] = (float) (nodes[i].quality >> 2);
          }
         }
 
     }
-        
+        return true;
 }
 int SL_lidar_S1::CloseDevice()
 {
@@ -159,5 +163,5 @@ int SL_lidar_S1::CloseDevice()
     drv->setMotorSpeed(0);
     drv->stop();
     drv->disconnect();
-    
+    return 0 ;
 }

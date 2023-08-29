@@ -1,7 +1,8 @@
-#include "../Smw/SmwApi.h"
+#include "../../Smw/SmwApi.h"
 #include <iostream>
 #include <string>
 #include <unistd.h>
+
 void PrintComposeframe(DataBase *data)
 {
     LidarScan *frameData = static_cast<LidarScan *>(data);
@@ -18,13 +19,13 @@ void PrintComposeframe(DataBase *data)
     }
     std::cout << std::endl;
     return;
-    return;
 }
+
 int main()
 {
-    std::string path = "../sensor_config.ini";
+    std::string path = "../../sensor_config.ini";
     SmwInit(path);
-    auto dev = GetDevice("SL_lidar_S1");
+    void* dev = GetDevice("SL_lidar_S1");
     std::vector<DataBase*> data;   
     while (1)
     {
