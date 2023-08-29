@@ -16,6 +16,7 @@
 #include "utility/logger.hpp"
 #include "SensorDevice.h"
 #include <libudev.h>
+#include <unistd.h>
 using namespace SMW;
 // 全局 unordered_map，用于存储类工厂对象
 std::unordered_map<std::string, AbstractClassFactoryBase*> classFactories;
@@ -45,7 +46,6 @@ struct udev_monitor * device_mon;
 
 void Udev_Get(bool flag , std::string type)
 {
-    
     udev *udev = udev_new();
     if (!udev) {
         std::cout<<"Failed to create udev.\n"<<std::endl;
@@ -63,31 +63,36 @@ void Udev_Get(bool flag , std::string type)
 }
 
 std::string configPath;
+SensorState ST;
+
 int SmwInit(std::string pathFile)
 {
     configPath = pathFile;
-    std::cout<<"SmwInit:" <<configPath<<std::endl;
+    std::cout<<"SmwInit: " <<configPath<<std::endl;
     IniFile * ini = Singleton<IniFile>::instance();
     ini->load(configPath);
     bool auto_flag = (*ini)["Feature configuration"]["auto_enble"];
     if(auto_flag == false)
     {
+        std::cout<<"The Plug and Play feature is not enabled!"<<std::endl;
         return 0;
     }
     std::string device_type = (string)(*ini)["Feature configuration"]["device_type"];
+    std::string SensorStaus = (string)(*ini)["Feature configuration"]["sensor_state"];
+    if(SensorStaus == "Already_inserted") ST = ADD;
+    if(SensorStaus == "Not_inserted") ST = REMOVE;
 
     Udev_Get(auto_flag,device_type);
 
 }
 
-static int flag = 2;
-
-int Auto_Monitor(DevHandle dev)
+static string last_Action = "nothing";
+SensorState Auto_Monitor(DevHandle dev)
 {
-        // 视频设备
-    if (udev_monitor_get_fd(device_mon)) 
+    if (udev_monitor_get_fd(device_mon))
         {
             udev_device *device = udev_monitor_receive_device(device_mon);
+
             if (dev) 
             {
                 const char *action = udev_device_get_action(device);
@@ -96,22 +101,51 @@ int Auto_Monitor(DevHandle dev)
                     string Action = udev_device_get_action(device);
                     if(Action == "add")
                     {
-                        std::cout<<"Sensor insertion!"<<std::endl;
-                        OpenDevice(dev);   
-                        flag = 1;
+                        if(last_Action != "added") //防止多次重复open
+                        {
+                            std::cout<<"Sensor insertion!"<<std::endl;
+                            OpenDevice(dev);  
+                            last_Action = "added";
+                            ST = RUNNING;
+                            return ST;
+                        } 
                     }
                     else if(Action == "remove")
                     {
-                        std::cout<<"The sensor has been unplugged!"<<std::endl;
-                        CloseDevice(dev);
-                        flag =  0;
+                        if(ST == ADD)  //防止抖动
+                        {
+                            return ST;
+                        }
+                        else
+                        {
+                            if(last_Action != "removed") //防止多次重复close
+                            {
+                                std::cout<<"The sensor has been unplugged!"<<std::endl;
+                                CloseDevice(dev);
+                                last_Action = "removed";
+                                ST = REMOVE;
+                                return ST;
+                            }
+                        }
                     }
+                }
+                else
+                {
+                        if(ST == ADD) 
+                        {
+                            OpenDevice(dev); 
+                            ST = RUNNING;
+                            return ST;
+                        }
+                        if(ST == RUNNING) return ST;
+                        if(ST == REMOVE)  return ST;
                 }
             udev_device_unref(device);
             }
        }
-
-    return flag;
+       else{
+        std::cout << "debug udev" <<std::endl;
+       }
 }
 
 DevHandle GetDevice(char *name)

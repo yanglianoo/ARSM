@@ -10,7 +10,6 @@
 #include <cfloat>
 #include <string>
 #include <vector>
-#include <opencv2/opencv.hpp>
 
 typedef struct _DataBase {
     virtual ~_DataBase() = default;
@@ -31,13 +30,16 @@ struct ImuData :public DataBase {
     float magnetometer_x;        // 机体系X轴磁感应强度
     float magnetometer_y;        // 机体系Y轴磁感应强度
     float magnetometer_z;        // 机体系Z轴磁感应强度
-    float imu_temperature;       // 如果IMU数据由多个传感器组成则该值为这些传感 器的平均温度
-    float Pressure;              // 气压值
-    float pressure_temperature;  // 气压计的温度值
-    int64_t Timestamp;           // 数据的时间戳
+    float roll;                     
+    float pitch;
+    float yaw;
+    //int64_t Timestamp;            // 数据的时间戳
+    // float imu_temperature;       // 如果IMU数据由多个传感器组成则该值为这些传感器的平均温度
+    // float Pressure;              // 气压值
+    // float pressure_temperature;  // 气压计的温度值
 };
 
-struct LidarScan :public DataBase
+struct LidarScan :public DataBase 
 {
     std::string frame_id;
     _Float32 angle_min;
@@ -51,17 +53,50 @@ struct LidarScan :public DataBase
     std::vector<_Float32> intensities; 
 };
 
-enum ImageType {
-    rgb=0,
-    depth
+struct ImageData : public DataBase{
+    uint32_t channelId = 0;
+    uint32_t channelNum = 0;
+    // uint32_t format = 0;  // 参考 ImageFormatType
+    uint32_t width = 0;
+    uint32_t height = 0;
+    uint32_t size = 0;
+    void *data = nullptr;
 };
 
-struct ImageData :public DataBase {
-    uint32_t channel_id; // 通道ID
-    ImageType type; //图片类型
-    uint32_t width=640; // 宽
-    uint32_t height=480; // 高
-    uint32_t size=640*480; // 大小
-    // void* ptr; // 存放图像的内存地址
-    cv::Mat data; // 存放图像
+struct DepthData {
+    uint32_t channelNum = 0;
+    // uint32_t format = 0; 
+    uint32_t width = 0;
+    uint32_t height = 0;
+    uint32_t size = 0;
+    void *data = nullptr;
+};
+
+struct PosData{
+    float translation_x;
+    float translation_y;
+    float translation_z;
+    float velocity_x;
+    float velocity_y;
+    float velocity_z;
+};
+
+struct D435ComposeFrame : public DataBase {
+    ImageData *m_color_frame = nullptr;
+    DepthData *m_depth_frame = nullptr;
+
+};
+
+struct T265ComposeFrame : public DataBase {
+    T265ComposeFrame()
+    {
+        image_left = new ImageData();
+        image_right = new ImageData();
+        pose_data = new PosData();
+        imu_data = new ImuData();
+    }
+    ImageData *image_left;
+    ImageData *image_right;
+    PosData   *pose_data;
+    ImuData   *imu_data;
 };

@@ -10,14 +10,14 @@ void PrintComposeframe(DataBase *data)
     std::cout << "angle_max: " << frameData->angle_max <<" ";
     std::cout << "range_min: " << frameData->range_min <<" ";
     std::cout << "range_max: " <<frameData->range_max << " ";
-    std::cout << "ranges[1]: " <<frameData->ranges[2] << " ";
-    // for(int i = 1;i<frameData->ranges.size();i++){
-    //     std::cout << "ranges: " <<frameData->ranges[i] << " ";
-    // }
-    // for(int j = 1;j<frameData->intensities.size();j++){
-    // std::cout << "intensities: " <<frameData->intensities[j] << " ";
-    // }
+    for(int i = 1;i<frameData->ranges.size();i++){
+        std::cout << "ranges: " <<frameData->ranges[i] << " ";
+    }
+    for(int j = 1;j<frameData->intensities.size();j++){
+    std::cout << "intensities: " <<frameData->intensities[j] << " ";
+    }
     std::cout << std::endl;
+    return;
     return;
 }
 int main()
@@ -25,27 +25,15 @@ int main()
     std::string path = "../sensor_config.ini";
     SmwInit(path);
     auto dev = GetDevice("SL_lidar_S1");
-    //OpenDevice(dev);
     std::vector<DataBase*> data;   
-    // while (1)
-    // {
-    //     GetFrameData(dev,data);  
-    //     //PrintComposeframe(data[0]);   
-    // }
-    while(1)
+    while (1)
     {
-        int ret =  Auto_Monitor(dev);
-
-        if(ret == 1)
+        SensorState ret =  Auto_Monitor(dev);
+        if(ret == RUNNING)
         {
             GetFrameData(dev,data);
             PrintComposeframe(data[0]);
         }
-        else if(ret == 2 )
-        {
-            
-        }
     }
-    
     return 0;
 }

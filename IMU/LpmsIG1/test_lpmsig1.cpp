@@ -1,3 +1,11 @@
+/**
+ * @File Name: SmwApi.cpp
+ * @brief  
+ * @Author : Timer email:330070781@qq.com
+ * @Version : 1.0
+ * @Creat Date : 2023-07-20
+ * 
+ */
 #include "../../Smw/SmwApi.h"
 #include <iostream>
 #include <string>
@@ -23,16 +31,12 @@ int main()
     std::vector<DataBase*> data;
     while(1)
     {
-        int ret =  Auto_Monitor(dev);
+        SensorState ret =  Auto_Monitor(dev);
 
-        if(ret == 1)
+        if(ret == RUNNING)
         {
             GetFrameData(dev,data);
             PrintComposeframe(data[0]);
-        }
-        else if(ret == 2 )
-        {
-            
         }
     }
     return 0;

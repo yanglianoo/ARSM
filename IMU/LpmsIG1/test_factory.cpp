@@ -34,11 +34,11 @@ public:
 class LPMS : public IMU {
 public:
     void Initialize() override {
-        std::cout<<"init" <<std::endl;
+        std::cout<<"init imu" <<std::endl;
     }
 
     void ReadData() override {
-        std::cout<<"get data" <<std::endl;
+        std::cout<<"get imu  data" <<std::endl;
     }
 };
 CLASS_LOADER_REGISTER_CLASS(LPMS,IMU)
@@ -54,14 +54,33 @@ public:
 class D435 : public CAMERA {
 public:
     void Initialize() override {
-        std::cout<<"init" <<std::endl;
+        std::cout<<"init camera" <<std::endl;
     }
 
     void ReadData() override {
-        std::cout<<"get data" <<std::endl;
+        std::cout<<"get camera  data" <<std::endl;
     }
 };
 CLASS_LOADER_REGISTER_CLASS(D435,CAMERA)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 int main()
 {
     IMU * newimu = CreateObject<IMU>("LPMS");

@@ -1,3 +1,11 @@
+/**
+ * @File Name: SmwApi.cpp
+ * @brief  
+ * @Author : Timer email:330070781@qq.com
+ * @Version : 1.0
+ * @Creat Date : 2023-07-20
+ * 
+ */
 #include "LpmsIG1.h"
 #include "../../Smw/utility/ini_file.hpp"
 #include "../../Smw/utility/singleton.hpp"
