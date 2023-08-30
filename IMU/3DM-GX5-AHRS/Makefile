@@ -1,6 +1,4 @@
 #指定头文件路径
-INCLUDE= -I../Smw/utility
-INCLUDE+= -I../Smw
 INCLUDE:=-Ic++-mscl/source
 INCLUDE+=-Ic++-mscl/Boost/include
 
@@ -9,8 +7,8 @@ CC = g++
 #编译选项
 CFLAGS:= -std=c++11 #c++11
 
-SmwLibPath:=../../Smw/lib/
-BoostLibPath:=./c++-mscl/Boost/lib
+SmwLibPath:=../../Smw/ubuntu20.04_X86_lib/
+BoostLibPath:=../../Smw/ubuntu20.04_X86_lib/Boost/lib
 LIB:=-lmscl
 LIB+=-lboost_system
 LIB+=-lboost_filesystem
