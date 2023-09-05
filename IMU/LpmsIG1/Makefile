@@ -3,7 +3,7 @@ CC = g++
 #编译选项
 CFLAGS:= -std=c++11 #c++11
 
-SmwLibPath:=../../Smw/lib/
+SmwLibPath:=../../Smw/ubuntu20.04_X86_lib/
 
 
 .PHONY:test_lpmsig1

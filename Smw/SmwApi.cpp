@@ -43,10 +43,11 @@ Base* CreateObject(const std::string& className) {
 
 
 struct udev_monitor * device_mon;
-
+struct udev *udev;
+struct udev_enumerate *enumerate;
 void Udev_Get(bool flag , std::string type)
 {
-    udev *udev = udev_new();
+    udev = udev_new();
     if (!udev) {
         std::cout<<"Failed to create udev.\n"<<std::endl;
     }
@@ -60,6 +61,10 @@ void Udev_Get(bool flag , std::string type)
     const char* device_name =  type.c_str();
     udev_monitor_filter_add_match_subsystem_devtype(device_mon, device_name, NULL);
     udev_monitor_enable_receiving(device_mon);
+
+
+    enumerate = udev_enumerate_new(udev);
+    udev_enumerate_add_match_subsystem(enumerate, device_name);
 }
 
 std::string configPath;
@@ -81,12 +86,13 @@ int SmwInit(std::string pathFile)
     std::string SensorStaus = (string)(*ini)["Feature configuration"]["sensor_state"];
     if(SensorStaus == "Already_inserted") ST = ADD;
     if(SensorStaus == "Not_inserted") ST = REMOVE;
-
     Udev_Get(auto_flag,device_type);
 
 }
 
 static string last_Action = "nothing";
+const char * ID_Model ;
+static int id_flag = 1;
 SensorState Auto_Monitor(DevHandle dev)
 {
     if (udev_monitor_get_fd(device_mon))
@@ -98,16 +104,22 @@ SensorState Auto_Monitor(DevHandle dev)
                 const char *action = udev_device_get_action(device);
                 if (action) 
                 {
-                    string Action = udev_device_get_action(device);
+                    string Action = action;
                     if(Action == "add")
                     {
                         if(last_Action != "added") //防止多次重复open
                         {
+                            //第一次插入时获取设备ID,作为唯一标识符
+                            if(id_flag == 1)
+                            {
+                                ID_Model  = udev_device_get_property_value(device, "ID_MODEL");
+                                id_flag ++;
+                            }
                             std::cout<<"Sensor insertion!"<<std::endl;
                             OpenDevice(dev);  
                             last_Action = "added";
                             ST = RUNNING;
-                            return ST;
+                            return ST; 
                         } 
                     }
                     else if(Action == "remove")
@@ -118,13 +130,31 @@ SensorState Auto_Monitor(DevHandle dev)
                         }
                         else
                         {
+                            // 拔出时需要遍历usb设备确保拔出的是正确的传感器
+                            struct udev_list_entry *devices, *entry;
+                            udev_enumerate_scan_devices(enumerate);
+                            devices = udev_enumerate_get_list_entry(enumerate);
+                            udev_list_entry_foreach(entry, devices)
+                            {
+                                const char *path = udev_list_entry_get_name(entry);
+                                struct udev_device *dev = udev_device_new_from_syspath(udev, path);
+                                // 获取ID_MODEL的值
+                                const char *model = udev_device_get_property_value(dev, "ID_MODEL");
+                                if (model && strcmp(model, ID_Model) == 0)
+                                {
+                                    udev_device_unref(dev);
+                                    ST = RUNNING;
+                                    return ST;
+                                }
+                            }
+                            //如果确认拔出是此传感器，则closedevice
                             if(last_Action != "removed") //防止多次重复close
                             {
-                                std::cout<<"The sensor has been unplugged!"<<std::endl;
-                                CloseDevice(dev);
-                                last_Action = "removed";
-                                ST = REMOVE;
-                                return ST;
+                                    std::cout<<"The sensor has been unplugged!"<<std::endl;
+                                    CloseDevice(dev);
+                                    last_Action = "removed";
+                                    ST = REMOVE;
+                                    return ST;
                             }
                         }
                     }
@@ -166,6 +196,7 @@ int GetFrameData(DevHandle dev, std::vector<DataBase *> &data)
     SensorDevice* devicePtr = static_cast<SensorDevice*>(dev);
     devicePtr->GetFrameData(data);
 }
+
 int CloseDevice(DevHandle dev)
 {
 
