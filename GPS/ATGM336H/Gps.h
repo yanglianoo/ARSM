@@ -15,8 +15,9 @@ class Gps:public SensorDevice
             delete [] device_path_;
         }
     private:
-        const char* device_path_;
+        char* device_path_;
         int serial_fd_;
+        int  baudRate;
         
 };
 CLASS_LOADER_REGISTER_CLASS(Gps,SensorDevice)

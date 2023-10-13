@@ -16,15 +16,16 @@ int main()
     SmwInit(path);
     auto dev = GetDevice("Gps");
     std::vector<DataBase*> data;
+    OpenDevice(dev);
     while(1)
     {
-        SensorState ret =  Auto_Monitor(dev);
+        //SensorState ret =  Auto_Monitor(dev);
 
-        if(ret == RUNNING)
-        {
+       // if(ret == RUNNING)
+       //{
             GetFrameData(dev,data);
-           // PrintComposeframe(data[0]);
-        }
+           //PrintComposeframe(data[0]);
+       // }
     }
     return 0;
 }

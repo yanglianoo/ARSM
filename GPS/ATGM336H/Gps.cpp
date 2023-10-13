@@ -9,6 +9,7 @@
 #include <termios.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <cstring>
 #include "../../Smw/utility/ini_file.hpp"
 #include "../../Smw/utility/singleton.hpp"
 using namespace SMW;
@@ -33,11 +34,8 @@ typedef struct SaveData
     char isUsefull;		//定位信息是否有效
 } _SaveData;
 _SaveData Save_Data;
+speed_t speed = B9600;  
 
-int ret;
-	struct termios old_cfg={0}; //用于保存终端配置之前的参数
-	struct termios new_cfg={0}; //用于保存终端新配置的参数
-	speed_t speed = B9600;		//定义波特率为9600
 
 void parseGpsBuffer(int pos)
 {
@@ -56,13 +54,6 @@ void parseGpsBuffer(int pos)
                 {
                     printf(" 解析错误 1\r\n");
                 }
- #ifdef __Debug_info               
-                else
-                {
-                    printf("subString: %c %c %c\r\n",*(subString + 1),*(subString + 2),*(subString + 3));
-                }
-#endif
-                
             }
             else
             {
@@ -163,8 +154,12 @@ bool Gps::Init(std::string &configPath)
     ini->load(configPath);
 
     string serial_port = (*ini)["Gps"]["serial_port"];
+    baudRate = (*ini)["Speed"]["baudRate"];
+    std::cout<<"serial_port:" << serial_port <<std::endl;
+    device_path_ = new char[serial_port.length() + 1];
+    std::strcpy(device_path_,serial_port.c_str());
+
     serial_fd_ = -1;
-    device_path_ = serial_port.c_str();
     
     return true;
 }
@@ -179,9 +174,8 @@ int Gps::GetFrameData(std::vector<DataBase *> &data)
     // ImuData* cas_data = dynamic_cast<ImuData*>(data[0]);
     // cas_data->accelerometer_x = Gps.ReadData();
 
-    //while(1)
-    //{ 
-        ret = read(serial_fd_, Save_Data.GPS_Buffer, sizeof(Save_Data.GPS_Buffer)-1);
+   
+        int ret = read(serial_fd_, Save_Data.GPS_Buffer, sizeof(Save_Data.GPS_Buffer)-1);
         Save_Data.GPS_Buffer[ret] = 0;
         if (ret < 0)
         {
@@ -189,26 +183,14 @@ int Gps::GetFrameData(std::vector<DataBase *> &data)
         }
         else if (ret > 0)
         {
-            
-           //原始数据
-            // printf("%s\n", Save_Data.GPS_Buffer);
-            
             int pos = 0;//获取关键数据相对位置
             for (int i = 0; i < GPS_Buffer_Length; i++)
             {
                 if (Save_Data.GPS_Buffer[i] == '$' && Save_Data.GPS_Buffer[i + 1] == 'G' && Save_Data.GPS_Buffer[i + 2] == 'N' && Save_Data.GPS_Buffer[i + 3] == 'R' && Save_Data.GPS_Buffer[i + 4] == 'M' && Save_Data.GPS_Buffer[i + 5] == 'C')
                 {
-#ifdef __Debug_info                      
-                    //调试代码
-                    printf("i = %d\r\n",i);
-                    printf("%c %c %c %c %c %c\r\n",Save_Data.GPS_Buffer[i],Save_Data.GPS_Buffer[i+1],Save_Data.GPS_Buffer[i+2],Save_Data.GPS_Buffer[i+3],Save_Data.GPS_Buffer[i+4],Save_Data.GPS_Buffer[i+5]);
-#endif
-                    pos = i;                   
-                }
-                
-            }           
-            
-            if(Save_Data.GPS_Buffer[pos] == '$' && Save_Data.GPS_Buffer[pos + 4] == 'M' && Save_Data.GPS_Buffer[pos + 5] == 'C')//确定是否收到"GPRMC/GNRMC"这一帧数据
+
+                    pos = i;      
+                       if(Save_Data.GPS_Buffer[pos] == '$' && Save_Data.GPS_Buffer[pos + 4] == 'M' && Save_Data.GPS_Buffer[pos + 5] == 'C')//确定是否收到"GPRMC/GNRMC"这一帧数据
             {
                 Save_Data.isGetData = true;
             
@@ -221,33 +203,33 @@ int Gps::GetFrameData(std::vector<DataBase *> &data)
                     printGpsBuffer();
                     memset(Save_Data.GPS_Buffer,0,GPS_Buffer_Length);             
                }           
-            }
+            }          
+                }
+                
+            }           
+            
+           
         }
-   // }
+   
     return 0;
 }
 
 
 int Gps::OpenDevice()
-{   
+{  
    /*第一步，串口初始化*/
         while (1)
         {
 
+            printf("device_path_ :%s\n",device_path_);
             serial_fd_ = open(device_path_,O_RDWR | O_NOCTTY | O_NDELAY);
-            if(serial_fd_ != -1) break;
+            if(serial_fd_ != -1) 
+            break;
         }
         
-        
-        ret = tcgetattr(serial_fd_, &old_cfg);
-	    if(ret < 0)
-        {
-		    printf("tcgetattr error\n");
-		    close(serial_fd_);
-		    return -1;
-	    }
-        
-
+         struct termios new_cfg;
+         memset(&new_cfg, 0, sizeof(new_cfg));
+       
         // 这个波特率是固定好了吗，不需要外部传入吗？
         cfmakeraw(&new_cfg);//设置为原始模式 
 	    new_cfg.c_cflag |= CREAD;// 使能接收 
@@ -259,7 +241,7 @@ int Gps::OpenDevice()
 	    new_cfg.c_cflag &= ~CSTOPB;//将停止位设置为1位
 	    new_cfg.c_cc[VTIME] = 0;// 将 MIN 和 TIME 设置为 0
 	    new_cfg.c_cc[VMIN] = 0;
-	    ret = tcflush(serial_fd_, TCIOFLUSH);//清空缓冲区域
+	    int ret = tcflush(serial_fd_, TCIOFLUSH);//清空缓冲区域
 
 	if(ret < 0)
     {
@@ -271,6 +253,7 @@ int Gps::OpenDevice()
 		printf("tcsetattr error\n");
 		return -1;
 	}	
+     printf("open\n");
     return 0;
 }
 
@@ -280,7 +263,6 @@ int Gps::CloseDevice()
      if (serial_fd_ != -1)
     {
         std::cout<<"Gps close" << std::endl;
-        tcsetattr(serial_fd_, TCSANOW, &old_cfg);
         close(serial_fd_);
         serial_fd_ = -1;
     }   
