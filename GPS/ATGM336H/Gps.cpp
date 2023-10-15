@@ -34,7 +34,7 @@ typedef struct SaveData
     char isUsefull;		//定位信息是否有效
 } _SaveData;
 _SaveData Save_Data;
-speed_t speed = B9600;  
+speed_t speed = B9600;  //15
 
 
 void parseGpsBuffer(int pos)

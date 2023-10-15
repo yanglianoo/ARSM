@@ -100,3 +100,29 @@ struct T265ComposeFrame : public DataBase {
     PosData   *pose_data;
     ImuData   *imu_data;
 };
+
+/* 六维力数据结构定义 */
+struct PowerData : public DataBase
+{
+    float fx;//x轴力
+    float fy;//y轴力
+    float fz;//z轴力
+    float Mx;//x轴力矩
+    float My;//y轴力矩
+    float Mz;//z轴力矩
+};
+
+
+/* GPS数据结构定义 */
+struct Gps : public DataBase
+{
+   uint64_t timestamp;
+   _Float64  latitude;   //纬度
+   _Float64  longitude;  //经度
+   _Float64  altitude;   //海拔
+    bool   sentenceHasFix; // 定位是否有效
+    size_t satellites;  //卫星数量
+   _Float64 hdop;
+   _Float64 speed;      //水平速率
+   _Float64 course;     //地面航向
+};
