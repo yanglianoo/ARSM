@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/dds/ARSM/Power/NBIT/LIJU.cpp
+LIJU.h
+/home/dds/ARSM/Power/NBIT/LIJU.h
+fcntl.h
+-
+
+/home/dds/ARSM/Power/NBIT/LIJU.h
+unistd.h
+-
+pthread.h
+-
+netdb.h
+-
+string.h
+-
+stdio.h
+-
+time.h
+-
+sys/time.h
+-
+sys/types.h
+-
+sys/select.h
+-
+arpa/inet.h
+-
+ctype.h
+-
+errno.h
+-
+

@@ -2,7 +2,6 @@
 #include <unistd.h>
 #include <iostream>
 #include <termios.h>
-#include <unistd.h>
 #include <cstring>
 #include <fcntl.h>
 

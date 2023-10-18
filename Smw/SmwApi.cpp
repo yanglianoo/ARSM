@@ -74,26 +74,14 @@ int SmwInit(std::string pathFile)
 {
     configPath = pathFile;
     std::cout<<"SmwInit: " <<configPath<<std::endl;
-    IniFile * ini = Singleton<IniFile>::instance();
-    ini->load(configPath);
-    bool auto_flag = (*ini)["Feature configuration"]["auto_enble"];
-    if(auto_flag == false)
-    {
-        std::cout<<"The Plug and Play feature is not enabled!"<<std::endl;
-        return 0;
-    }
-    std::string device_type = (string)(*ini)["Feature configuration"]["device_type"];
-    std::string SensorStaus = (string)(*ini)["Feature configuration"]["sensor_state"];
-    if(SensorStaus == "Already_inserted") ST = ADD;
-    if(SensorStaus == "Not_inserted") ST = REMOVE;
-    Udev_Get(auto_flag,device_type);
-
+    return 0;
 }
 
 static string last_Action = "nothing";
 const char * ID_Model ;
 static int id_flag = 1;
-SensorState Auto_Monitor(DevHandle dev)
+
+SensorState Udev_Monitor(DevHandle dev)
 {
     if (udev_monitor_get_fd(device_mon))
         {
@@ -176,6 +164,100 @@ SensorState Auto_Monitor(DevHandle dev)
        else{
         std::cout << "debug udev" <<std::endl;
        }
+}
+
+SensorState Net_Monitor(DevHandle dev,const char* device)
+{
+
+    char path[128];
+    snprintf(path, sizeof(path), "/sys/class/net/%s/carrier", device);
+
+    FILE *file = fopen(path, "r");
+    if (file) {
+        char line[256];
+        if (fgets(line, sizeof(line), file)) {
+            int carrier = atoi(line);
+            fclose(file);
+            if(carrier == 1)
+            {
+                if(last_Action != "added") //防止多次重复open
+                {
+                    
+                    std::cout<<"Sensor insertion!"<<std::endl;
+                    OpenDevice(dev);
+                    last_Action = "added";
+                    ST = RUNNING;
+                    return ST; 
+                }
+                ST = RUNNING;
+                return ST; 
+            }
+            if(carrier == 0)
+            {
+                //如果确认拔出是此传感器，则closedevice
+                if(last_Action != "removed") //防止多次重复close
+                {
+                    std::cout<<"The sensor has been unplugged!"<<std::endl;
+                    CloseDevice(dev);
+                    last_Action = "removed";
+                    ST = REMOVE;
+                    return ST;
+                }
+                ST = REMOVE;
+                return ST;
+            }
+        }
+    }
+    fclose(file);
+}
+
+static int bit=0;
+std::string device_type;
+std::string net_device;
+SensorState Auto_Monitor(DevHandle dev)
+{
+    if(bit==0)
+    {
+        bit++;
+        IniFile * ini = Singleton<IniFile>::instance();
+        ini->load(configPath);
+        bool auto_flag = (*ini)["Feature configuration"]["auto_enble"];
+        if(auto_flag == false)
+        {
+            std::cout<<"The Plug and Play feature is not enabled!"<<std::endl;
+            return REMOVE;
+        }
+        device_type = (string)(*ini)["Feature configuration"]["device_type"];
+        std::string SensorStaus = (string)(*ini)["Feature configuration"]["sensor_state"];
+        if(SensorStaus == "Already_inserted") ST = ADD;
+        if(SensorStaus == "Not_inserted") ST = REMOVE;
+
+        if(device_type == string("usb"))
+        {
+            //初始化tty设备的即插即用，使用libudev
+            std::cout<<"device: usb"<<std::endl;
+            Udev_Get(auto_flag,device_type);
+        }
+        if(device_type == string("net"))
+        {
+            net_device = (string)(*ini)["Feature configuration"]["net_device"];
+            std::cout<<"net_device:" << net_device << std::endl;
+        }
+    }
+    else
+    {
+
+        if(device_type == string("usb"))
+        {
+            return Udev_Monitor(dev);
+        }
+        if(device_type == string("net"))
+        {
+            const char * device = net_device.c_str();
+            return Net_Monitor(dev, device);
+        }
+
+    }
 }
 
 DevHandle GetDevice(char *name)

@@ -1,0 +1,1 @@
+/usr/bin/g++   -g  -Wall -g   CMakeFiles/LIJU.dir/main.cpp.o CMakeFiles/LIJU.dir/LIJU.cpp.o  -o LIJU 
