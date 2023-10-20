@@ -2,7 +2,7 @@
 #include "../../Smw/SensorDevice.h"
 #include "../../Smw/utility/ClassFactory.hpp"
 
-class Gps:public SensorDevice
+class ATGM336H:public SensorDevice
 {
 
      public:
@@ -10,7 +10,7 @@ class Gps:public SensorDevice
         int GetFrameData(std::vector<DataBase *> &data) override ;
         int OpenDevice() override;
         int CloseDevice() override; 
-        ~Gps()
+        ~ATGM336H()
         {
             delete [] device_path_;
         }
@@ -20,4 +20,4 @@ class Gps:public SensorDevice
         int  baudRate;
         
 };
-CLASS_LOADER_REGISTER_CLASS(Gps,SensorDevice)
+CLASS_LOADER_REGISTER_CLASS(ATGM336H,SensorDevice)

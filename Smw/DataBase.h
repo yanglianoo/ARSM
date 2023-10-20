@@ -114,7 +114,7 @@ struct PowerData : public DataBase
 
 
 /* GPS数据结构定义 */
-struct Gps : public DataBase
+struct GpsData : public DataBase
 {
    uint64_t timestamp;
    _Float64  latitude;   //纬度

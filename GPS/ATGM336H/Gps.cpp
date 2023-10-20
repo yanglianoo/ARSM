@@ -34,8 +34,6 @@ typedef struct SaveData
     char isUsefull;		//定位信息是否有效
 } _SaveData;
 _SaveData Save_Data;
-speed_t speed = B9600;  //15
-
 
 void parseGpsBuffer(int pos)
 {
@@ -120,8 +118,6 @@ void printGpsBuffer()
         {
             Save_Data.isUsefull = false;
             printf("Save_Data.latitude = ");
-            // printf(Save_Data.latitude);
-            // printf("--");
             f_latitude = Convert_to_degrees(Save_Data.latitude);
             printf("%lf%s", f_latitude, Save_Data.N_S);
             printf("\r\n");
@@ -131,8 +127,6 @@ void printGpsBuffer()
             printf("\r\n");
 
             printf("Save_Data.longitude = ");
-            // printf(Save_Data.longitude);
-            // printf("--");
             f_longitude = Convert_to_degrees(Save_Data.longitude);
             printf("%lf%s", f_longitude, Save_Data.E_W);
             printf("\r\n");
@@ -147,13 +141,13 @@ void printGpsBuffer()
     }
 }
 
-bool Gps::Init(std::string &configPath)
+bool ATGM336H::Init(std::string &configPath)
 {
     std::cout<<"Gps Sensor"<<std::endl;
     IniFile * ini = Singleton<IniFile>::instance();
     ini->load(configPath);
 
-    string serial_port = (*ini)["Gps"]["serial_port"];
+    string serial_port = (*ini)["ATGM336H"]["serial_port"];
     baudRate = (*ini)["Speed"]["baudRate"];
     std::cout<<"serial_port:" << serial_port <<std::endl;
     device_path_ = new char[serial_port.length() + 1];
@@ -164,17 +158,15 @@ bool Gps::Init(std::string &configPath)
     return true;
 }
 
-int Gps::GetFrameData(std::vector<DataBase *> &data)
+int ATGM336H::GetFrameData(std::vector<DataBase *> &data)
 {
     //暂时先不定义力矩传感器的数据结构，用imu的代替
-    // if(data.size() <= 1 )
-    // {
-    //     data.push_back(new ImuData());
-    // }
-    // ImuData* cas_data = dynamic_cast<ImuData*>(data[0]);
-    // cas_data->accelerometer_x = Gps.ReadData();
+    if(data.size() <= 1 )
+    {
+        data.push_back(new GpsData());
+    }
+    GpsData* gps_data = dynamic_cast<GpsData*>(data[0]);
 
-   
         int ret = read(serial_fd_, Save_Data.GPS_Buffer, sizeof(Save_Data.GPS_Buffer)-1);
         Save_Data.GPS_Buffer[ret] = 0;
         if (ret < 0)
@@ -210,18 +202,20 @@ int Gps::GetFrameData(std::vector<DataBase *> &data)
             
            
         }
+
+        gps_data->sentenceHasFix = static_cast<bool>(Save_Data.isUsefull);
    
     return 0;
 }
 
 
-int Gps::OpenDevice()
+int ATGM336H::OpenDevice()
 {  
    /*第一步，串口初始化*/
         while (1)
         {
 
-            printf("device_path_ :%s\n",device_path_);
+           // printf("device_path_ :%s\n",device_path_);
             serial_fd_ = open(device_path_,O_RDWR | O_NOCTTY | O_NDELAY);
             if(serial_fd_ != -1) 
             break;
@@ -233,6 +227,37 @@ int Gps::OpenDevice()
         // 这个波特率是固定好了吗，不需要外部传入吗？
         cfmakeraw(&new_cfg);//设置为原始模式 
 	    new_cfg.c_cflag |= CREAD;// 使能接收 
+        speed_t speed ;
+        switch (baudRate) {
+            case 1200: speed = B1200;
+                break;
+            case 1800: speed = B1800;
+                break;
+            case 2400: speed = B2400;
+                break;
+            case 4800: speed = B4800;
+                break;
+            case 9600: speed = B9600;
+                break;
+            case 19200: speed = B19200;
+                break;
+            case 38400: speed = B38400;
+                break;
+            case 57600: speed = B57600;
+                break;
+            case 115200: speed = B115200;
+                break;
+            case 230400: speed = B230400;
+                break;
+            case 460800: speed = B460800;
+                break;
+            case 500000: speed = B500000;
+                break;
+            default:    //默认配置为115200
+                speed = B115200;
+            printf("default baud rate: 115200\n");
+            break;
+         }
 	    cfsetspeed(&new_cfg, speed);//将波特率设置为9600
 	    new_cfg.c_cflag &= ~CSIZE; //将数据位相关的比特位清零
 	    new_cfg.c_cflag |= CS8;    //将数据位数设置为8位
@@ -258,7 +283,7 @@ int Gps::OpenDevice()
 }
 
 
-int Gps::CloseDevice()
+int ATGM336H::CloseDevice()
 {
      if (serial_fd_ != -1)
     {
