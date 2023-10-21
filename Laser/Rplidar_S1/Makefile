@@ -4,7 +4,7 @@ CC = g++
 CFLAGS:= -std=c++11 #c++11
 
 #链接库路径
-SmwLibPath:=../../Smw/lib/
+SmwLibPath:=../../Smw/ubuntu20.04_X86_lib
 
 .PHONY:test_SL_S1
 test_SL_S1:test_SL_S1.cpp SL_S1.CPP

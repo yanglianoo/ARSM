@@ -30,7 +30,7 @@ int Power::GetFrameData(std::vector<DataBase *> &data)
         PowerData* power_data = dynamic_cast<PowerData*>(data[0]);
         float Powerdata[6];
         power.ReadData(Powerdata);
-        
+        power_data->frequency = 10;
         power_data->fx = Powerdata[0];
         power_data->fy = Powerdata[1];
         power_data->fz = Powerdata[2];

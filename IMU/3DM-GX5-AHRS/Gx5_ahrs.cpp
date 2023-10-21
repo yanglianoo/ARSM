@@ -170,6 +170,7 @@ int GX5_AHRS::GetFrameData(std::vector<DataBase*> &data)
         data.push_back(new ImuData());
     }
     ImuData* GX5_AHRS_data = dynamic_cast<ImuData*>(data[0]);
+    GX5_AHRS_data->frequency = 100;
     mscl::MipDataPackets packets = node.getDataPackets();
 
         for(mscl::MipDataPacket packet : packets)
@@ -223,6 +224,8 @@ int GX5_AHRS::CloseDevice()
 void PrintComposeframe(DataBase *data)
 {
     ImuData *frameData = static_cast<ImuData *>(data);
+    printf("freqency: %d ",frameData->frequency);
+    // std::cout<<"freqency: "<<frameData->frequency<<" ";
     std::cout << "roll: " << frameData->roll << " ";
     std::cout << "pitch: " << frameData->pitch <<" ";
     std::cout << "yaw: " << frameData->yaw <<" ";
@@ -237,15 +240,16 @@ int main()
     SmwInit(path);
     auto dev = GetDevice("GX5_AHRS");
     std::vector<DataBase*> data;
+    // OpenDevice(dev);
 err:
     try
     {
         while(1)
         {
-            SensorState ret =  Auto_Monitor(dev);
-
+            SensorState ret =  Auto_Monitor(dev); 
+            //std::cout<<"ret:"<<ret<<std::endl;
             if(ret == RUNNING)
-            {
+             {
                 GetFrameData(dev,data);
                 PrintComposeframe(data[0]);
             }
@@ -253,6 +257,7 @@ err:
     }
     catch(mscl::Error& e)
     {
+        // std::cout << "?????????????? "  << " ";
         goto err;
     }
     return 0;

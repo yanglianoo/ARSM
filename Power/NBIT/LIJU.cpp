@@ -49,7 +49,7 @@ void LIJU::UDP_GetData()
     inet_ntop(clientaddr.sin_family, &clientaddr.sin_addr, ip, socklen);
 
     int port = ntohs(clientaddr.sin_port);
-    sleep(1);
+    usleep(100000);
 }
 
 void LIJU::print_RAWData()

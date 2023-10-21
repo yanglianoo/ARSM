@@ -126,3 +126,11 @@ struct GpsData : public DataBase
    _Float64 speed;      //水平速率
    _Float64 course;     //地面航向
 };
+
+/* 速度传感器数据结构定义 */
+struct SpeedData : public DataBase
+{
+   _Float64 n;     //转速
+   _Float64 angle; // 单圈角度
+};
+

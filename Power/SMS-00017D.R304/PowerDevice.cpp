@@ -138,7 +138,7 @@ int PowerSensor::ReadData(float* data){
     data[3] = hex_flo(Save_Data.Mx);
     data[4] = hex_flo(Save_Data.My);
     data[5] = hex_flo(Save_Data.Mz);
-    sleep(1);
+    usleep(100000);
     return 0;
 }
 

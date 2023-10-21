@@ -75,11 +75,11 @@ int main(int argc, char *argv[])
         Save_Data.order[0] = 0x01;
         Save_Data.order[1] = 0x03;
         Save_Data.order[2] = 0x00;
-        Save_Data.order[3] = 0x03;
+        Save_Data.order[3] = 0x20;
         Save_Data.order[4] = 0x00;
-        Save_Data.order[5] = 0x01;
-        Save_Data.order[6] = 0x74;
-        Save_Data.order[7] = 0x0A;
+        Save_Data.order[5] = 0x02;
+        Save_Data.order[6] = 0xC5;
+        Save_Data.order[7] = 0xC1;
 	
         while(1)
         { 
@@ -111,13 +111,13 @@ int main(int argc, char *argv[])
 
                         for(int i = 0;i < ret;i++)
                         {
-                                if(Save_Data.SUDU_Buffer[i] == 0x03 && Save_Data.SUDU_Buffer[i + 1] == 0x02)
+                                if(Save_Data.SUDU_Buffer[i] == 0x03 && Save_Data.SUDU_Buffer[i + 1] == 0x04)
                                 {
                                         Save_Data.pos = i + 1;
                                         break;
                                 }
                         }
-                        sprintf(Save_Data.buf, "%x%x",Save_Data.SUDU_Buffer[ Save_Data.pos + 1],Save_Data.SUDU_Buffer[ Save_Data.pos + 2]);
+                        sprintf(Save_Data.buf, "%x%x%x%x",Save_Data.SUDU_Buffer[ Save_Data.pos + 1],Save_Data.SUDU_Buffer[ Save_Data.pos + 2],Save_Data.SUDU_Buffer[ Save_Data.pos +3],Save_Data.SUDU_Buffer[ Save_Data.pos + 4]);
 
                         Save_Data.Data =  hexToDec(Save_Data.buf);
                         printf("SUDU_Data: %d\r\n", Save_Data.Data);

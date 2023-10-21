@@ -9,6 +9,7 @@ void PrintComposeframe(DataBase* data)
 {
     PowerData *powerdata = static_cast<PowerData *>(data);
     std::cout<<std::endl;
+    std::cout<<"powerdata.freqency= "<<powerdata->frequency<<std::endl;
     std::cout<<"powerdata.fx= "<<powerdata->fx<<std::endl;
     std::cout<<"powerdata.fy= "<<powerdata->fy<<std::endl;
     std::cout<<"powerdata.fz= "<<powerdata->fz<<std::endl;

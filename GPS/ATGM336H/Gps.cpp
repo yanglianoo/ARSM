@@ -278,7 +278,7 @@ int ATGM336H::OpenDevice()
 		printf("tcsetattr error\n");
 		return -1;
 	}	
-     printf("open\n");
+    printf("open\n");
     return 0;
 }
 

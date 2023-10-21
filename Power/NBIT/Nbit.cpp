@@ -28,6 +28,7 @@ int Nbit::GetFrameData(std::vector<DataBase *> &data)
     PowerData* power_data = dynamic_cast<PowerData*>(data[0]);
     nbit.UDP_GetData();
     nbit.calc_resault();
+    power_data->frequency = 10;
     power_data->fx = nbit.Sum[0];
     power_data->fy = nbit.Sum[1];
     power_data->fz = nbit.Sum[2];

@@ -83,6 +83,7 @@ int SL_lidar_S1::GetFrameData(std::vector<DataBase*> &data)
     }
     // std::cout<<"debug"<<std::endl;
         LidarScan* RPLidar_S1 = static_cast<LidarScan*>(data[0]);
+        RPLidar_S1->frequency = 10;
         auto start_time = std::time(nullptr);
 
         sl_lidar_response_measurement_node_hq_t nodes[8192];
