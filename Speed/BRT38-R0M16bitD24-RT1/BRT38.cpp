@@ -81,7 +81,7 @@ bool BRT38::Init(std::string &configPath)
     IniFile * ini = Singleton<IniFile>::instance();
     ini->load(configPath);
 
-    string serial_port = (*ini)["BRT38"]["serial_port"];
+    string serial_port = (string)(*ini)["BRT38"]["serial_port"];
     baudRate = (*ini)["BRT38"]["baudRate"];
     std::cout<<"serial_port:" << serial_port <<std::endl;
     device_path_ = new char[serial_port.length() + 1];
@@ -113,7 +113,7 @@ int BRT38::GetFrameData(std::vector<DataBase *> &data)
     }
     for(int i = 0;i < ret;i++)
     {
-        if(Save_Data.SUDU_Buffer[i] == 0x03 && Save_Data.SUDU_Buffer[i + 1] == 0x02)
+        if(Save_Data.SUDU_Buffer[i] == 0x03 && Save_Data.SUDU_Buffer[i + 1] == 0x04)
         {
             Save_Data.pos = i + 1;
             break;

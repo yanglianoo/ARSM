@@ -90,7 +90,7 @@ bool OID::Init(std::string &configPath)
     IniFile * ini = Singleton<IniFile>::instance();
     ini->load(configPath);
 
-    string serial_port = (*ini)["OID"]["serial_port"];
+    string serial_port =(string)(*ini)["OID"]["serial_port"];
     baudRate = (*ini)["OID"]["baudRate"];
     std::cout<<"serial_port:" << serial_port <<std::endl;
     device_path_ = new char[serial_port.length() + 1];
